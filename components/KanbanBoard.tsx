@@ -2,7 +2,8 @@ import "../App.css";
 import PlusIcon from "../icons/PlusIcon";
 import "../index.css";
 import { useState } from "react";
-import { Column } from "../types";
+import { Column, Id } from "../types";
+import { ColumnContainer } from "./ColumnContainer";
 
 const KanbanBoard = () => {
   const [columns, setColumns] = useState<Column[]>([]);
@@ -20,12 +21,18 @@ const KanbanBoard = () => {
 
     setColumns([...columns, columnToAdd]);
   };
+
+  const deleteColumn = (id: Id) => {
+    const filteredColums = columns.filter((col) => col.id !== id);
+    setColumns(filteredColums);
+  };
+
   return (
     <div className="m-auto flex min-h-screen w-full items-center overflow-x-auto overflow-y-hidden px-[40px]">
       <div className="m-auto flex gap-4">
         <div className="flex gap-4">
           {columns.map((column) => (
-            <div>{column.title}</div>
+            <ColumnContainer column={column} deleteColumn={deleteColumn} />
           ))}
         </div>
         <button
