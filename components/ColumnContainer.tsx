@@ -30,6 +30,7 @@ export const ColumnContainer = (props: Props) => {
   };
 
   if (isDragging) {
+    //Leaves a styled component under a dragged component
     return (
       <div
         ref={setNodeRef}
