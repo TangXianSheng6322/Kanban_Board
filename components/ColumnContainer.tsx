@@ -1,17 +1,31 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { DeleteIcon } from "../icons/DeleteIcon";
-import { Column, Id } from "../types";
+import { Column, Id, Task } from "../types";
 import { CSS } from "@dnd-kit/utilities";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import PlusIcon from "../icons/PlusIcon";
+import TaskCard from "./TaskCard";
 
 interface Props {
   column: Column;
   deleteColumn: (id: Id) => void;
   updateColumn: (id: Id, title: string) => void;
+  createTask: (columnId: Id) => void;
+  deleteTask: (id: Id) => void;
+  updateTask: (id: Id, content: string) => void;
+  tasks: Task[];
 }
 export const ColumnContainer = (props: Props) => {
   const [editMode, setEditMode] = useState(false);
-  const { column, deleteColumn, updateColumn } = props;
+  const {
+    column,
+    deleteColumn,
+    updateColumn,
+    createTask,
+    tasks,
+    deleteTask,
+    updateTask,
+  } = props;
   const {
     setNodeRef,
     attributes,
@@ -46,6 +60,13 @@ export const ColumnContainer = (props: Props) => {
     );
   }
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // inputRef.current?.focus();
+    inputRef.current?.select();
+  }, [editMode]);
+
   return (
     <div
       ref={setNodeRef}
@@ -69,6 +90,7 @@ export const ColumnContainer = (props: Props) => {
           {editMode && (
             <input
               className="bg-black focus:border-rose-500 border rounded outline-none px-2"
+              ref={inputRef}
               value={column.title}
               onChange={(e) => {
                 updateColumn(column.id, e.target.value);
@@ -95,9 +117,25 @@ export const ColumnContainer = (props: Props) => {
       </div>
 
       {/* Column task container */}
-      <div className="flex flex-grow">Content</div>
+      <div className="flex flex-grow flex-col gap-4 p-2 overflow-x-hidden overflow-y-auto">
+        {tasks.map((task) => (
+          <TaskCard
+            key={task.id}
+            task={task}
+            deleteTask={deleteTask}
+            updateTask={updateTask}
+          />
+        ))}
+      </div>
       {/* Column footer */}
-      <div>Footer</div>
+      <button
+        className="flex gap-2 items-center border-columBackgroundColor border-2 rounded-md p-4 border-x-columBackgroundColor hover:bg-mainBackgroundColor hover:text-rose-500 active:bg-black"
+        onClick={() => {
+          createTask(column.id);
+        }}
+      >
+        <PlusIcon /> Add Task
+      </button>
     </div>
   );
 };

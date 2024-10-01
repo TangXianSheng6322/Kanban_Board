@@ -2,7 +2,7 @@ import "../App.css";
 import PlusIcon from "../icons/PlusIcon";
 import "../index.css";
 import { useState, useMemo } from "react";
-import { Column, Id } from "../types";
+import { Column, Id, Task } from "../types";
 import { ColumnContainer } from "./ColumnContainer";
 import {
   DndContext,
@@ -20,6 +20,7 @@ const KanbanBoard = () => {
   const [columns, setColumns] = useState<Column[]>([]);
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   const generateId = () => {
     // Generates a random number between 0 and 1000
@@ -46,6 +47,30 @@ const KanbanBoard = () => {
     });
 
     setColumns(newColumns);
+  };
+
+  const createTask = (columnId: Id) => {
+    const newTask: Task = {
+      id: generateId(),
+      columnId: columnId,
+      content: `Title ${tasks.length + 1}`,
+    };
+
+    setTasks([...tasks, newTask]);
+  };
+
+  const deleteTask = (id: Id) => {
+    const newTasks = tasks.filter((task) => task.id !== id);
+    setTasks(newTasks);
+  };
+
+  const updateTask = (id: Id, content: string) => {
+    const newTasks = tasks.map((task) => {
+      if (task.id !== id) return task;
+      return { ...task, content };
+    });
+
+    setTasks(newTasks);
   };
 
   function onDragStart(event: DragStartEvent) {
@@ -103,6 +128,10 @@ const KanbanBoard = () => {
                   column={column}
                   deleteColumn={deleteColumn}
                   updateColumn={updateColumn}
+                  createTask={createTask}
+                  tasks={tasks.filter((task) => task.columnId === column.id)}
+                  deleteTask={deleteTask}
+                  updateTask={updateTask}
                 />
               ))}
             </SortableContext>
@@ -125,6 +154,12 @@ const KanbanBoard = () => {
                 deleteColumn={deleteColumn}
                 column={activeColumn}
                 updateColumn={updateColumn}
+                createTask={createTask}
+                tasks={tasks.filter(
+                  (task) => task.columnId === activeColumn.id
+                )}
+                deleteTask={deleteTask}
+                updateTask={updateTask}
               />
             )}
           </DragOverlay>,
