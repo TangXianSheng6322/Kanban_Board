@@ -1,8 +1,8 @@
-import { useSortable } from "@dnd-kit/sortable";
+import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { DeleteIcon } from "../icons/DeleteIcon";
 import { Column, Id, Task } from "../types";
 import { CSS } from "@dnd-kit/utilities";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import PlusIcon from "../icons/PlusIcon";
 import TaskCard from "./TaskCard";
 
@@ -16,7 +16,6 @@ interface Props {
   tasks: Task[];
 }
 export const ColumnContainer = (props: Props) => {
-  const [editMode, setEditMode] = useState(false);
   const {
     column,
     deleteColumn,
@@ -26,6 +25,12 @@ export const ColumnContainer = (props: Props) => {
     deleteTask,
     updateTask,
   } = props;
+
+  const [editMode, setEditMode] = useState(false);
+  const tasksIds = useMemo(() => {
+    return tasks.map((col) => col.id);
+  }, [tasks]);
+
   const {
     setNodeRef,
     attributes,
@@ -60,12 +65,12 @@ export const ColumnContainer = (props: Props) => {
     );
   }
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  // const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    // inputRef.current?.focus();
-    inputRef.current?.select();
-  }, [editMode]);
+  // useEffect(() => {
+  //   // inputRef.current?.focus();
+  //   inputRef.current?.select();
+  // }, [editMode]);
 
   return (
     <div
@@ -90,7 +95,7 @@ export const ColumnContainer = (props: Props) => {
           {editMode && (
             <input
               className="bg-black focus:border-rose-500 border rounded outline-none px-2"
-              ref={inputRef}
+              // ref={inputRef}
               value={column.title}
               onChange={(e) => {
                 updateColumn(column.id, e.target.value);
@@ -118,14 +123,16 @@ export const ColumnContainer = (props: Props) => {
 
       {/* Column task container */}
       <div className="flex flex-grow flex-col gap-4 p-2 overflow-x-hidden overflow-y-auto">
-        {tasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            deleteTask={deleteTask}
-            updateTask={updateTask}
-          />
-        ))}
+        <SortableContext items={tasksIds}>
+          {tasks.map((task) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              deleteTask={deleteTask}
+              updateTask={updateTask}
+            />
+          ))}
+        </SortableContext>
       </div>
       {/* Column footer */}
       <button
