@@ -2,7 +2,7 @@ import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { DeleteIcon } from "../icons/DeleteIcon";
 import { Column, Id, Task } from "../types";
 import { CSS } from "@dnd-kit/utilities";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import PlusIcon from "../icons/PlusIcon";
 import TaskCard from "./TaskCard";
 
